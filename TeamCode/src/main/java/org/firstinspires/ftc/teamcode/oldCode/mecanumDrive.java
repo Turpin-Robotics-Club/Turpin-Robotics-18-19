@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldRobotConstants;
 import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldSensors;
 
 
-@TeleOp(name = "Mecanum Drive")
+@TeleOp(name = "Old Mecanum Drive", group = "Old Code")
 public class mecanumDrive extends OpMode {
 
 

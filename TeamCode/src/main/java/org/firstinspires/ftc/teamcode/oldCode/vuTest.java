@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldSensors;
 
-@TeleOp(name = "VuMarlr test")
+@TeleOp(name = "VuMarlr test", group = "Tests")
 public class vuTest extends OpMode {
 
     VuforiaLocalizer vuforia;

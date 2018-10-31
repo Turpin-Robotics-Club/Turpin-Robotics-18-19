@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldRobotConstants;
 import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldMove;
 
-@Autonomous(name="A C 0", group="Autonomous Finals")
+@Autonomous(name="A C 0", group="Old Code")
 //@Disabled
 public class driveForward extends LinearOpMode{
 

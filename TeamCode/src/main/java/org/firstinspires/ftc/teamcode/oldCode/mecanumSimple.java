@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name="Simple Drive")
+@TeleOp(name="Old Simple Drive", group = "Old Code")
 public class mecanumSimple extends OpMode{
 
 
