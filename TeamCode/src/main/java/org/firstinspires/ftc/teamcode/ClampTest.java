@@ -15,15 +15,20 @@ public class ClampTest extends OpMode {
         left = hardwareMap.servo.get("left_servo");
         right = hardwareMap.servo.get("right_servo");
         left.setDirection(Servo.Direction.REVERSE);
-        left.setPosition(0.2);
-        right.setPosition(0.2);
+        left.setPosition(0.6);
+        right.setPosition(0);
     }
 
     @Override
     public void loop() {
         if(gamepad1.a){
-            left.setPosition(0.8);
-            right.setPosition(0.8);
+            left.setPosition(0.85);
+            right.setPosition(0.35);
         }
+        else{
+            left.setPosition(0.6);
+            right.setPosition(0);
+        }
+
     }
 }
