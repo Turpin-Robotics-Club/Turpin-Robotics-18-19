@@ -23,7 +23,7 @@ public class ClampTest extends OpMode {
     public void loop() {
         if(gamepad1.a){
             left.setPosition(0.56);
-            right.setPosition(0.56);
+            right.setPosition(0.56) ;
         }
         else{
             left.setPosition(0.525);
