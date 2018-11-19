@@ -39,17 +39,12 @@ public class ScrimmageAutonomous extends LinearOpMode {
         waitForStart();
 
 
-        liftLeft.setPower(1);
-        liftRight.setPower(1);
-        sleep(5000);
-        liftLeft.setPower(0);
-        liftRight.setPower(0);
 
-        frontLeft.setPower(1);
-        frontRight.setPower(1);
-        backLeft.setPower(1);
-        backRight.setPower(1);
-        sleep(5000);
+        frontLeft.setPower(-1);
+        frontRight.setPower(-1);
+        backLeft.setPower(-1);
+        backRight.setPower(-1);
+        sleep(2000);
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);

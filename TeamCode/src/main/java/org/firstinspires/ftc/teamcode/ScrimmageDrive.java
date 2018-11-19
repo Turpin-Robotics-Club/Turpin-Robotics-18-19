@@ -94,7 +94,7 @@ public class ScrimmageDrive extends OpMode {
         }
 
         if(gamepad2.left_bumper){
-            left.setPosition(0.525);
+            left.setPosition(0.9);
             right.setPosition(0.525) ;
         }
         if(gamepad2.right_bumper){
