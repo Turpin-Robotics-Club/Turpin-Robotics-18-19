@@ -72,34 +72,26 @@ public class ScrimmageDrive extends OpMode {
         backRightPower += -gamepad1.right_stick_x;
 
 
-        frontLeft.setPower(frontLeftPower * SPEED);
-        frontRight.setPower(frontRightPower * SPEED);
-        backLeft.setPower(backLeftPower * SPEED);
-        backRight.setPower(backRightPower * SPEED);
+        frontLeft.setPower(Math.pow(frontLeftPower, 3) * SPEED);
+        frontRight.setPower(Math.pow(frontRightPower, 3) * SPEED);
+        backLeft.setPower(Math.pow(backLeftPower, 3) * SPEED);
+        backRight.setPower(Math.pow(backRightPower, 3) * SPEED);
 
     }
     private void operator(){
 
-        if(gamepad2.a) {
-            liftLeft.setPower(0.6);
-            liftRight.setPower(0.6);
-        }
-        else if(gamepad2.y) {
-            liftLeft.setPower(-0.6);
-            liftRight.setPower(-0.6);
-        }
-        else {
-            liftLeft.setPower(0);
-            liftRight.setPower(0);
-        }
+        liftRight.setPower(Math.pow(gamepad2.right_stick_y,3));
+        liftLeft.setPower(Math.pow(gamepad2.right_stick_y,3));
 
-        if(gamepad2.left_bumper){
-            left.setPosition(0.9);
-            right.setPosition(0.525) ;
+
+
+        if(gamepad2.left_bumper){ //close
+            left.setPosition(0.8);
+            right.setPosition(0.5) ;
         }
-        if(gamepad2.right_bumper){
-            left.setPosition(0.5);
-            right.setPosition(0.5);
+        if(gamepad2.right_bumper){ //open
+            left.setPosition(0.3);
+            right.setPosition(0.0);
         }
 
     }
