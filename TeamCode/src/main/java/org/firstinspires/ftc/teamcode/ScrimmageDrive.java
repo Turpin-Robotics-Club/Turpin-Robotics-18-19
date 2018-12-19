@@ -87,10 +87,10 @@ public class ScrimmageDrive extends OpMode {
         lift.setPower(Math.pow(gamepad2.right_stick_y,3)*0.5);
 
         //operator/driver combined controls
-        frontLeftPower += (gamepad2.right_stick_x) / 2;
-        frontRightPower += (-gamepad2.right_stick_x) / 2;
-        backLeftPower += (-gamepad2.right_stick_x) / 2;
-        backRightPower += (gamepad2.right_stick_x) / 2;
+        frontLeftPower += (gamepad2.left_stick_x) / 2;
+        frontRightPower += (-gamepad2.left_stick_x) / 2;
+        backLeftPower += (-gamepad2.left_stick_x) / 2;
+        backRightPower += (gamepad2.left_stick_x) / 2;
 
 
 
@@ -101,7 +101,7 @@ public class ScrimmageDrive extends OpMode {
             flip.setPosition(0.8);
 
         }
-        if(gamepad2.left_trigger>0.2){
+        else if(gamepad2.left_trigger>0.2){
             flip.setPosition(0.2);
         }
 
