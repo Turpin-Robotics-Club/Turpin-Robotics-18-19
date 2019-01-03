@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 
@@ -81,6 +82,7 @@ public class ConceptObjectDetection extends LinearOpMode {
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
                             for (Recognition recognition : updatedRecognitions) {
+                                telemetry.addData( "Item", recognition.getLabel()+" Position: "+ recognition.getLeft()+"Certainty: "+recognition.getConfidence());
                                 if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
                                     goldMineralX = (int) recognition.getLeft();
                                 } else if (silverMineral1X == -1) {
