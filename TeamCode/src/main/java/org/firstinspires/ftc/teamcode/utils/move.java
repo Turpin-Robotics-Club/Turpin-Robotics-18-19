@@ -35,6 +35,31 @@ public class move {
 
     public void forward(float distance, float power){
 
+        final float distFromEncMult = 0.02f;
+        final float distFromVelMult = 0.1f;
+        resetEncoders();
+        float flpower = power;
+        float flPrevEnc = 0;
+        float frpower = power;
+        float frPrevEnc = 0;
+        float blpower = power;
+        float blPrevEnc = 0;
+        float brpower = power;
+        float brPrevEnc = 0;
+        float prevEncAvg = 0;
+        float avgDist = 0;
+        do{
+            avgDist = (flmotor.getCurrentPosition() + frmotor.getCurrentPosition() + blmotor.getCurrentPosition() + brmotor.getCurrentPosition())/4;
+            flpower = power + ((flmotor.getCurrentPosition()-avgDist)*distFromEncMult) + (((avgDist - prevEncAvg) - (flmotor.getCurrentPosition() - flPrevEnc))*distFromVelMult);
+            frpower = power + ((frmotor.getCurrentPosition()-avgDist)*distFromEncMult) + (((avgDist - prevEncAvg) - (frmotor.getCurrentPosition() - frPrevEnc))*distFromVelMult);
+            blpower = power + ((blmotor.getCurrentPosition()-avgDist)*distFromEncMult) + (((avgDist - prevEncAvg) - (blmotor.getCurrentPosition() - blPrevEnc))*distFromVelMult);
+            brpower = power + ((brmotor.getCurrentPosition()-avgDist)*distFromEncMult) + (((avgDist - prevEncAvg) - (brmotor.getCurrentPosition() - brPrevEnc))*distFromVelMult);
+            flPrevEnc = flmotor.getCurrentPosition();
+            frPrevEnc = frmotor.getCurrentPosition();
+            blPrevEnc = blmotor.getCurrentPosition();
+            brPrevEnc = brmotor.getCurrentPosition();
+        }while(avgDist<distance);
+
     }
 
     /**
@@ -46,4 +71,12 @@ public class move {
         return -1;
     }
 
+
+    public void resetEncoders()
+    {
+        flmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        blmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        brmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
 }
