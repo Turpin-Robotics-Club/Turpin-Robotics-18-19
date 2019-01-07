@@ -31,9 +31,14 @@ public class move {
         brmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flmotor.setDirection(DcMotorSimple.Direction.REVERSE);
         blmotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        Sensors.initialize(opMode);
     }
 
     public void forward(float distance, float power){
+
+        double CIRCUMFERENCE = Math.PI * RobotConstants.wheelDiameter;
+        double ROTATIONS = distance / CIRCUMFERENCE;
+        double COUNTS = RobotConstants.encoderCPR * ROTATIONS * RobotConstants.gearRatio;
 
         final float distFromEncMult = 0.02f;
         final float distFromVelMult = 0.1f;
@@ -71,6 +76,23 @@ public class move {
         return -1;
     }
 
+    public void turn(float degrees, float power){
+        Sensors.resetGyro();
+
+        while((degrees>0 ? Sensors.readGyro() < degrees || (Sensors.readGyro() > 350 || Sensors.readGyro() < 10) : Sensors.readGyro() > 360+degrees || (Sensors.readGyro() > 350 || Sensors.readGyro() < 10))){
+            if(degrees>0){
+                flmotor.setPower(-power);
+                frmotor.setPower(power);
+                blmotor.setPower(-power);
+                brmotor.setPower(power);
+            }else if(degrees<0){
+                flmotor.setPower(power);
+                frmotor.setPower(-power);
+                blmotor.setPower(power);
+                brmotor.setPower(-power);
+            }
+        }
+    }
 
     public void resetEncoders()
     {
