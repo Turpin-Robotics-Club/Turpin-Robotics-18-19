@@ -99,7 +99,7 @@ public class Sensors {
             gyrochange = (gyroInitial + (360-realGyro())) / runtime.seconds();
     }
 
-    public static double readGyro() {
+    static double readGyro() {
         angles   = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         if ((gyrochange * (runtime.seconds())) + realGyro()-gyroInitial<0)
             return (gyrochange * (runtime.seconds())) + realGyro()  -gyroInitial  +360;
@@ -115,6 +115,8 @@ public class Sensors {
         runtime.reset();
         gyrochange = 0;
     }
+
+
 
     private static double realGyro()
     {

@@ -4,8 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import java.util.ArrayList;
+
 
 public class move {
     //Drive Motors
@@ -39,30 +43,64 @@ public class move {
         double CIRCUMFERENCE = Math.PI * RobotConstants.wheelDiameter;
         double ROTATIONS = distance / CIRCUMFERENCE;
         double COUNTS = RobotConstants.encoderCPR * ROTATIONS * RobotConstants.gearRatio;
+        double Kp = 0.1;
+        double Ki = 0.05;
+        double Kd = 0.05;
+
+        ArrayList<Double> flPastCountDifferences = new ArrayList<Double>();
+        ArrayList<Double> PastCountTimes = new ArrayList<Double>();
+
+        ArrayList<Double> frPastCountDifferences = new ArrayList<Double>();
+
+
+        ArrayList<Double> blPastCountDifferences = new ArrayList<Double>();
+
+
+        ArrayList<Double> brPastCountDifferences = new ArrayList<Double>();
+
+
+
+
+        ElapsedTime timeTotal = new ElapsedTime();
+        ElapsedTime timeTick = new ElapsedTime();
+        timeTick.reset();
 
         final float distFromEncMult = 0.02f;
         final float distFromVelMult = 0.1f;
         resetEncoders();
-        float flpower = power;
+        double flpower = power;
         float flPrevEnc = 0;
-        float frpower = power;
+        double frpower = power;
         float frPrevEnc = 0;
-        float blpower = power;
+        double blpower = power;
         float blPrevEnc = 0;
-        float brpower = power;
+        double brpower = power;
         float brPrevEnc = 0;
         float prevEncAvg = 0;
-        float avgDist = 0;
+        double avgDist = 0;
         do{
             avgDist = (flmotor.getCurrentPosition() + frmotor.getCurrentPosition() + blmotor.getCurrentPosition() + brmotor.getCurrentPosition())/4;
-            flpower = power + ((flmotor.getCurrentPosition()-avgDist)*distFromEncMult) + (((avgDist - prevEncAvg) - (flmotor.getCurrentPosition() - flPrevEnc))*distFromVelMult);
-            frpower = power + ((frmotor.getCurrentPosition()-avgDist)*distFromEncMult) + (((avgDist - prevEncAvg) - (frmotor.getCurrentPosition() - frPrevEnc))*distFromVelMult);
-            blpower = power + ((blmotor.getCurrentPosition()-avgDist)*distFromEncMult) + (((avgDist - prevEncAvg) - (blmotor.getCurrentPosition() - blPrevEnc))*distFromVelMult);
-            brpower = power + ((brmotor.getCurrentPosition()-avgDist)*distFromEncMult) + (((avgDist - prevEncAvg) - (brmotor.getCurrentPosition() - brPrevEnc))*distFromVelMult);
+
+            flPastCountDifferences.add(flmotor.getCurrentPosition()-avgDist);
+            frPastCountDifferences.add(frmotor.getCurrentPosition()-avgDist);
+            blPastCountDifferences.add(blmotor.getCurrentPosition()-avgDist);
+            brPastCountDifferences.add(brmotor.getCurrentPosition()-avgDist);
+            PastCountTimes.add(timeTick.seconds());
+
+
+            flpower = power + (Kp*(flmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(flPastCountDifferences, flPastCountDifferences)) + (Kd*(flPastCountDifferences.get(flPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
+            flpower = power + (Kp*(frmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(frPastCountDifferences, frPastCountDifferences)) + (Kd*(frPastCountDifferences.get(frPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
+            flpower = power + (Kp*(blmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(blPastCountDifferences, blPastCountDifferences)) + (Kd*(blPastCountDifferences.get(blPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
+            flpower = power + (Kp*(brmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(brPastCountDifferences, brPastCountDifferences)) + (Kd*(brPastCountDifferences.get(brPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
+
+
+
+
             flPrevEnc = flmotor.getCurrentPosition();
             frPrevEnc = frmotor.getCurrentPosition();
             blPrevEnc = blmotor.getCurrentPosition();
             brPrevEnc = brmotor.getCurrentPosition();
+            timeTick.reset();
         }while(avgDist<distance);
 
     }
@@ -77,7 +115,7 @@ public class move {
     }
 
     public void turn(float degrees, float power){
-        Sensors.resetGyro();
+
 
         while((degrees>0 ? Sensors.readGyro() < degrees || (Sensors.readGyro() > 350 || Sensors.readGyro() < 10) : Sensors.readGyro() > 360+degrees || (Sensors.readGyro() > 350 || Sensors.readGyro() < 10))){
             if(degrees>0){

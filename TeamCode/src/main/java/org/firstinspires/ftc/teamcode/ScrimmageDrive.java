@@ -17,6 +17,7 @@ public class ScrimmageDrive extends OpMode {
     private DcMotor push;
     private DcMotor slap;
     private Servo flip;
+    private DcMotor liftBot;
     private double frontLeftPower;
     private double frontRightPower;
     private double backLeftPower;
@@ -34,6 +35,7 @@ public class ScrimmageDrive extends OpMode {
         lift = hardwareMap.dcMotor.get("lift");
         push = hardwareMap.dcMotor.get("push");
         slap = hardwareMap.dcMotor.get("slap-mo-tron");
+        liftBot = hardwareMap.dcMotor.get("liftrobot");
         slap.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -78,6 +80,12 @@ public class ScrimmageDrive extends OpMode {
         backLeftPower += gamepad1.right_stick_x;
         backRightPower += -gamepad1.right_stick_x;
 
+
+        //lift robot
+        if (gamepad1.y)
+            liftBot.setPower(1f);
+        else if(gamepad1.a)
+            liftBot.setPower(-1);
 
 
 
