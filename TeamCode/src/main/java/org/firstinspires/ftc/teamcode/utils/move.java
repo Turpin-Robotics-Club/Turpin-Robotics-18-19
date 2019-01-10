@@ -47,40 +47,41 @@ public class move {
         double Ki = 0.05;
         double Kd = 0.05;
 
+        //one component for integral
         ArrayList<Double> flPastCountDifferences = new ArrayList<Double>();
-        ArrayList<Double> PastCountTimes = new ArrayList<Double>();
-
         ArrayList<Double> frPastCountDifferences = new ArrayList<Double>();
-
-
         ArrayList<Double> blPastCountDifferences = new ArrayList<Double>();
-
-
         ArrayList<Double> brPastCountDifferences = new ArrayList<Double>();
 
+        //other component for integral
+        ArrayList<Double> PastCountTimes = new ArrayList<Double>();
 
 
 
         ElapsedTime timeTotal = new ElapsedTime();
+        timeTotal.reset();
         ElapsedTime timeTick = new ElapsedTime();
         timeTick.reset();
 
         final float distFromEncMult = 0.02f;
         final float distFromVelMult = 0.1f;
         resetEncoders();
-        double flpower = power;
-        float flPrevEnc = 0;
-        double frpower = power;
-        float frPrevEnc = 0;
-        double blpower = power;
-        float blPrevEnc = 0;
-        double brpower = power;
-        float brPrevEnc = 0;
-        float prevEncAvg = 0;
+
+        double flpower;
+        double frpower;
+        double blpower;
+        double brpower;
+
         double avgDist = 0;
         do{
             avgDist = (flmotor.getCurrentPosition() + frmotor.getCurrentPosition() + blmotor.getCurrentPosition() + brmotor.getCurrentPosition())/4;
-
+            while (sumArrayList(PastCountTimes) < timeTotal.seconds()-3){
+                flPastCountDifferences.remove(0);
+                frPastCountDifferences.remove(0);
+                blPastCountDifferences.remove(0);
+                brPastCountDifferences.remove(0);
+                PastCountTimes.remove(0);
+            }
             flPastCountDifferences.add(flmotor.getCurrentPosition()-avgDist);
             frPastCountDifferences.add(frmotor.getCurrentPosition()-avgDist);
             blPastCountDifferences.add(blmotor.getCurrentPosition()-avgDist);
@@ -88,19 +89,24 @@ public class move {
             PastCountTimes.add(timeTick.seconds());
 
 
-            flpower = power + (Kp*(flmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(flPastCountDifferences, flPastCountDifferences)) + (Kd*(flPastCountDifferences.get(flPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
-            flpower = power + (Kp*(frmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(frPastCountDifferences, frPastCountDifferences)) + (Kd*(frPastCountDifferences.get(frPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
-            flpower = power + (Kp*(blmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(blPastCountDifferences, blPastCountDifferences)) + (Kd*(blPastCountDifferences.get(blPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
-            flpower = power + (Kp*(brmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(brPastCountDifferences, brPastCountDifferences)) + (Kd*(brPastCountDifferences.get(brPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
+            flpower = power + (Kp * (flmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(flPastCountDifferences, flPastCountDifferences)) + (Kd*(flPastCountDifferences.get(flPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
+            frpower = power + (Kp * (frmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(frPastCountDifferences, frPastCountDifferences)) + (Kd*(frPastCountDifferences.get(frPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
+            blpower = power + (Kp * (blmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(blPastCountDifferences, blPastCountDifferences)) + (Kd*(blPastCountDifferences.get(blPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
+            brpower = power + (Kp * (brmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(brPastCountDifferences, brPastCountDifferences)) + (Kd*(brPastCountDifferences.get(brPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
 
 
 
 
-            flPrevEnc = flmotor.getCurrentPosition();
-            frPrevEnc = frmotor.getCurrentPosition();
-            blPrevEnc = blmotor.getCurrentPosition();
-            brPrevEnc = brmotor.getCurrentPosition();
+
             timeTick.reset();
+
+
+            flmotor.setPower(flpower);
+            frmotor.setPower(frpower);
+            blmotor.setPower(blpower);
+            brmotor.setPower(brpower);
+
+
         }while(avgDist<distance);
 
     }
@@ -138,5 +144,11 @@ public class move {
         frmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         blmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         brmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    private double sumArrayList(ArrayList<Double> a){
+        double out = 0;
+        for(double b:a) out+=b;
+        return out;
     }
 }
