@@ -15,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static android.os.SystemClock.sleep;
-import static org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldMove.pause;
 
 public class Sensors {
     public static double gyrochange;
@@ -24,33 +23,19 @@ public class Sensors {
     public static double gyroInitial = 0;
     public static BNO055IMU gyro;
     public static Orientation angles;
-    private static LinearOpMode opMode;
-    private static Telemetry telemetry;
-    OpenGLMatrix lastLocation = null;
-    static OpenGLMatrix pose;
-    //left: 0x6c     right:0x5c
-    private static HardwareMap hardware_map;
+    private static OpMode opMode;
+
+
 
     /**
      *
      * @param _opMode to get FTC data
      */
     static void initialize(OpMode _opMode) {
-        if (_opMode instanceof LinearOpMode) {
-            opMode = (LinearOpMode) _opMode;
-        } else {
-            return;
-        }
 
-
-
-        hardware_map = opMode.hardwareMap;
-
-
-
-        telemetry = opMode.telemetry;
-
-
+        opMode = _opMode;
+        opMode.telemetry.addData("Gyro", "Begun");
+        opMode.telemetry.update();
         BNO055IMU.Parameters IMUparams = new BNO055IMU.Parameters();
         IMUparams.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         IMUparams.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -59,18 +44,24 @@ public class Sensors {
         IMUparams.loggingTag          = "IMU";
         IMUparams.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        gyro = hardware_map.get(BNO055IMU.class, "imu");
+        opMode.telemetry.addData("Gyro", "Params Created");
+        opMode.telemetry.update();
+
+        gyro = opMode.hardwareMap.get(BNO055IMU.class, "imu");
+
 
 
 
         runtime.reset();
 
-        gyro.initialize(IMUparams);
+        gyro.initialize(IMUparams) ;
+        opMode.telemetry.addData("Gyro", "Initialized");
+        opMode.telemetry.update();
         sleep(5000);
-        pause(100);
-        angles   = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        telemetry.addData("angle", angles);
 
+        angles   = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        opMode.telemetry.addData("angle", angles);
+        opMode.telemetry.update();
 
         //+0 for the orientation of the rev module
         if(realGyro()+180>360)
@@ -99,7 +90,7 @@ public class Sensors {
             gyrochange = (gyroInitial + (360-realGyro())) / runtime.seconds();
     }
 
-    static double readGyro() {
+    public static double readGyro() {
         angles   = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         if ((gyrochange * (runtime.seconds())) + realGyro()-gyroInitial<0)
             return (gyrochange * (runtime.seconds())) + realGyro()  -gyroInitial  +360;
@@ -118,7 +109,7 @@ public class Sensors {
 
 
 
-    private static double realGyro()
+    public static double realGyro()
     {
 
         return 180-angles.firstAngle;

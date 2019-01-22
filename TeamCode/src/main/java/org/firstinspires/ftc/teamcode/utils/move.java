@@ -18,8 +18,8 @@ public class move {
     private DcMotor blmotor;
     private DcMotor brmotor;
 
-    private static Telemetry telemetry;
-    private static OpMode opMode;
+
+    private OpMode opMode;
 
     ColorSensor colorSensor;
 
@@ -29,6 +29,10 @@ public class move {
         frmotor = opMode.hardwareMap.get(DcMotor.class, "front_right");
         blmotor = opMode.hardwareMap.get(DcMotor.class, "back_left");
         brmotor = opMode.hardwareMap.get(DcMotor.class, "back_right");
+        flmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        blmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        brmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         blmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -43,9 +47,9 @@ public class move {
         double CIRCUMFERENCE = Math.PI * RobotConstants.wheelDiameter;
         double ROTATIONS = distance / CIRCUMFERENCE;
         double COUNTS = RobotConstants.encoderCPR * ROTATIONS * RobotConstants.gearRatio;
-        double Kp = 0.1;
-        double Ki = 0.05;
-        double Kd = 0.05;
+        double Kp = 0.001;
+        double Ki = 0.00005;
+        double Kd = 0.00005;
 
         //one component for integral
         ArrayList<Double> flPastCountDifferences = new ArrayList<Double>();
@@ -63,8 +67,7 @@ public class move {
         ElapsedTime timeTick = new ElapsedTime();
         timeTick.reset();
 
-        final float distFromEncMult = 0.02f;
-        final float distFromVelMult = 0.1f;
+
         resetEncoders();
 
         double flpower;
@@ -73,39 +76,59 @@ public class move {
         double brpower;
 
         double avgDist = 0;
+
+        flPastCountDifferences.add(flmotor.getCurrentPosition()-avgDist);
+        frPastCountDifferences.add(frmotor.getCurrentPosition()-avgDist);
+        blPastCountDifferences.add(blmotor.getCurrentPosition()-avgDist);
+        brPastCountDifferences.add(brmotor.getCurrentPosition()-avgDist);
+        PastCountTimes.add(timeTick.seconds());
         do{
-            avgDist = (flmotor.getCurrentPosition() + frmotor.getCurrentPosition() + blmotor.getCurrentPosition() + brmotor.getCurrentPosition())/4;
-            while (sumArrayList(PastCountTimes) < timeTotal.seconds()-3){
-                flPastCountDifferences.remove(0);
-                frPastCountDifferences.remove(0);
-                blPastCountDifferences.remove(0);
-                brPastCountDifferences.remove(0);
-                PastCountTimes.remove(0);
+            try {
+                avgDist = (flmotor.getCurrentPosition() + frmotor.getCurrentPosition() + blmotor.getCurrentPosition() + brmotor.getCurrentPosition()) / 4f;
+                opMode.telemetry.addData("avgDist", avgDist);
+                opMode.telemetry.addData("flPID", (Kp * (flmotor.getCurrentPosition() - avgDist))+"/"+(Ki * RobotConstants.integral(flPastCountDifferences, PastCountTimes))+"/"+(Kd * (flPastCountDifferences.get(flPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
+                opMode.telemetry.addData("frPID", (Kp * (frmotor.getCurrentPosition() - avgDist))+"/"+(Ki * RobotConstants.integral(frPastCountDifferences, PastCountTimes))+"/"+(Kd * (frPastCountDifferences.get(frPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
+                opMode.telemetry.addData("blPID", (Kp * (blmotor.getCurrentPosition() - avgDist))+"/"+(Ki * RobotConstants.integral(blPastCountDifferences, PastCountTimes))+"/"+(Kd * (blPastCountDifferences.get(blPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
+                opMode.telemetry.addData("brPID", (Kp * (brmotor.getCurrentPosition() - avgDist))+"/"+(Ki * RobotConstants.integral(brPastCountDifferences, PastCountTimes))+"/"+(Kd * (brPastCountDifferences.get(brPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
+
+                while (sumArrayList(PastCountTimes) < timeTotal.seconds() - 3) {
+                    flPastCountDifferences.remove(0);
+                    frPastCountDifferences.remove(0);
+                    blPastCountDifferences.remove(0);
+                    brPastCountDifferences.remove(0);
+                    PastCountTimes.remove(0);
+                }
+                flPastCountDifferences.add(flmotor.getCurrentPosition() - avgDist);
+                frPastCountDifferences.add(frmotor.getCurrentPosition() - avgDist);
+                blPastCountDifferences.add(blmotor.getCurrentPosition() - avgDist);
+                brPastCountDifferences.add(brmotor.getCurrentPosition() - avgDist);
+                PastCountTimes.add(timeTick.seconds());
+
+
+                flpower = power + ((Kp * (flmotor.getCurrentPosition() - avgDist)) + (Ki * RobotConstants.integral(flPastCountDifferences, PastCountTimes)) + (Kd * (flPastCountDifferences.get(flPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
+                frpower = power + ((Kp * (frmotor.getCurrentPosition() - avgDist)) + (Ki * RobotConstants.integral(frPastCountDifferences, PastCountTimes)) + (Kd * (frPastCountDifferences.get(frPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
+                blpower = power + ((Kp * (blmotor.getCurrentPosition() - avgDist)) + (Ki * RobotConstants.integral(blPastCountDifferences, PastCountTimes)) + (Kd * (blPastCountDifferences.get(blPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
+                brpower = power + ((Kp * (brmotor.getCurrentPosition() - avgDist)) + (Ki * RobotConstants.integral(brPastCountDifferences, PastCountTimes)) + (Kd * (brPastCountDifferences.get(brPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
+
+
+
+                opMode.telemetry.addData("flpower", flpower);
+                opMode.telemetry.addData("frpower", frpower);
+                opMode.telemetry.addData("blpower", blpower);
+                opMode.telemetry.addData("brpower", brpower);
+                opMode.telemetry.update();
+
+                flmotor.setPower(flpower);
+                frmotor.setPower(frpower);
+                blmotor.setPower(blpower);
+                brmotor.setPower(brpower);
+                timeTick.reset();
+
+            }catch(Exception e) {
+
+                opMode.telemetry.addData("ERROR", e);
+                opMode.telemetry.update();
             }
-            flPastCountDifferences.add(flmotor.getCurrentPosition()-avgDist);
-            frPastCountDifferences.add(frmotor.getCurrentPosition()-avgDist);
-            blPastCountDifferences.add(blmotor.getCurrentPosition()-avgDist);
-            brPastCountDifferences.add(brmotor.getCurrentPosition()-avgDist);
-            PastCountTimes.add(timeTick.seconds());
-
-
-            flpower = power + (Kp * (flmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(flPastCountDifferences, flPastCountDifferences)) + (Kd*(flPastCountDifferences.get(flPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
-            frpower = power + (Kp * (frmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(frPastCountDifferences, frPastCountDifferences)) + (Kd*(frPastCountDifferences.get(frPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
-            blpower = power + (Kp * (blmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(blPastCountDifferences, blPastCountDifferences)) + (Kd*(blPastCountDifferences.get(blPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
-            brpower = power + (Kp * (brmotor.getCurrentPosition()-avgDist)) + (Ki * RobotConstants.integral(brPastCountDifferences, brPastCountDifferences)) + (Kd*(brPastCountDifferences.get(brPastCountDifferences.size()-1)/PastCountTimes.get(PastCountTimes.size()-1)));
-
-
-
-
-
-            timeTick.reset();
-
-
-            flmotor.setPower(flpower);
-            frmotor.setPower(frpower);
-            blmotor.setPower(blpower);
-            brmotor.setPower(brpower);
-
 
         }while(avgDist<distance);
 
@@ -122,28 +145,42 @@ public class move {
 
     public void turn(float degrees, float power){
 
-
-        while((degrees>0 ? Sensors.readGyro() < degrees || (Sensors.readGyro() > 350 || Sensors.readGyro() < 10) : Sensors.readGyro() > 360+degrees || (Sensors.readGyro() > 350 || Sensors.readGyro() < 10))){
+        double target = Sensors.realGyro() + degrees;
+        while (target>360)target-=360;
+        //by default, right
+        while(Sensors.realGyro()>target+10 || Sensors.realGyro()<target-10){
             if(degrees>0){
-                flmotor.setPower(-power);
-                frmotor.setPower(power);
-                blmotor.setPower(-power);
-                brmotor.setPower(power);
-            }else if(degrees<0){
                 flmotor.setPower(power);
                 frmotor.setPower(-power);
                 blmotor.setPower(power);
                 brmotor.setPower(-power);
+            }else if(degrees<0){
+                flmotor.setPower(-power);
+                frmotor.setPower(power);
+                blmotor.setPower(-power);
+                brmotor.setPower(power);
             }
+            opMode.telemetry.addData("Target", target);
+            opMode.telemetry.addData("Current", Sensors.readGyro());
+            opMode.telemetry.addData("Real", Sensors.realGyro());
+            opMode.telemetry.update();
         }
     }
 
     public void resetEncoders()
     {
+        flmotor.setPower(0);
+        frmotor.setPower(0);
+        blmotor.setPower(0);
+        brmotor.setPower(0);
         flmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         blmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         brmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        blmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        brmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private double sumArrayList(ArrayList<Double> a){
@@ -151,4 +188,17 @@ public class move {
         for(double b:a) out+=b;
         return out;
     }
+
+    public void pause(int milliseconds)
+    {
+        ElapsedTime tim = new ElapsedTime();
+        tim.reset();
+        try {
+            while (tim.milliseconds()<milliseconds) wait(5000);
+        }catch (Exception e){
+            opMode.telemetry.addData("ERROR", e.toString());
+        }
+
+    }
+
 }

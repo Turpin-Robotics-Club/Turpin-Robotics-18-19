@@ -33,6 +33,9 @@ public class ScrimmageDrive extends OpMode {
         backLeft = hardwareMap.dcMotor.get("back_left");
         backRight = hardwareMap.dcMotor.get("back_right");
         lift = hardwareMap.dcMotor.get("lift");
+        lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         push = hardwareMap.dcMotor.get("push");
         slap = hardwareMap.dcMotor.get("slap-mo-tron");
         liftBot = hardwareMap.dcMotor.get("liftrobot");
@@ -86,14 +89,20 @@ public class ScrimmageDrive extends OpMode {
             liftBot.setPower(1f);
         else if(gamepad1.a)
             liftBot.setPower(-1);
+        else liftBot.setPower(0);
 
 
 
     }
     private void operator(){
 
-        lift.setPower(Math.pow(gamepad2.right_stick_y,3)*0.5);
-
+        if(gamepad2.right_trigger>0.5 && gamepad2.right_bumper) {
+            lift.setPower(-0.35);
+            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+        else lift.setPower((gamepad2.right_trigger>0.5 && lift.getCurrentPosition()>0.5? -0.5:(gamepad2.right_bumper && lift.getCurrentPosition()<2900? 0.5 : 0)));
+        telemetry.addData("Lift counts", lift.getCurrentPosition());
         //operator/driver combined controls
         frontLeftPower += (gamepad2.left_stick_x) / 2;
         frontRightPower += (-gamepad2.left_stick_x) / 2;
@@ -106,11 +115,11 @@ public class ScrimmageDrive extends OpMode {
         push.setPower(Math.pow(gamepad2.left_stick_y,3)*0.5);
 
         if(gamepad2.left_bumper){
-            flip.setPosition(0.8);
+            flip.setPosition(0.0);
 
         }
         else if(gamepad2.left_trigger>0.2){
-            flip.setPosition(0.2);
+            flip.setPosition(1);
         }
 
         if(gamepad2.a) slap.setPower(0.9);
