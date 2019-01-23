@@ -84,8 +84,12 @@ public class move {
         PastCountTimes.add(timeTick.seconds());
         do{
             try {
+
                 avgDist = (flmotor.getCurrentPosition() + frmotor.getCurrentPosition() + blmotor.getCurrentPosition() + brmotor.getCurrentPosition()) / 4f;
                 opMode.telemetry.addData("avgDist", avgDist);
+                opMode.telemetry.addData("Counts", COUNTS);
+                opMode.telemetry.update();
+                /*
                 opMode.telemetry.addData("flPID", (Kp * (flmotor.getCurrentPosition() - avgDist))+"/"+(Ki * RobotConstants.integral(flPastCountDifferences, PastCountTimes))+"/"+(Kd * (flPastCountDifferences.get(flPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
                 opMode.telemetry.addData("frPID", (Kp * (frmotor.getCurrentPosition() - avgDist))+"/"+(Ki * RobotConstants.integral(frPastCountDifferences, PastCountTimes))+"/"+(Kd * (frPastCountDifferences.get(frPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
                 opMode.telemetry.addData("blPID", (Kp * (blmotor.getCurrentPosition() - avgDist))+"/"+(Ki * RobotConstants.integral(blPastCountDifferences, PastCountTimes))+"/"+(Kd * (blPastCountDifferences.get(blPastCountDifferences.size() - 1) / PastCountTimes.get(PastCountTimes.size() - 1))));
@@ -123,14 +127,20 @@ public class move {
                 blmotor.setPower(blpower);
                 brmotor.setPower(brpower);
                 timeTick.reset();
+                */
 
+
+                flmotor.setPower(power);
+                frmotor.setPower(power);
+                blmotor.setPower(power);
+                brmotor.setPower(power);
             }catch(Exception e) {
 
                 opMode.telemetry.addData("ERROR", e);
                 opMode.telemetry.update();
             }
 
-        }while(avgDist<distance);
+        }while(avgDist<COUNTS);
 
     }
 
