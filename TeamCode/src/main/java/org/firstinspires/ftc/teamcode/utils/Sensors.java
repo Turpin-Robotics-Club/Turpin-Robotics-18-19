@@ -60,10 +60,11 @@ public class Sensors {
         gyro.initialize(IMUparams) ;
         opMode.telemetry.addData("Gyro", "Initialized");
         opMode.telemetry.update();
-        sleep(5000);
+        //sleep(5000);
 
         angles   = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         opMode.telemetry.addData("angle", angles);
+        opMode.telemetry.addData("real angle", realGyro());
         opMode.telemetry.update();
 
         //+0 for the orientation of the rev module

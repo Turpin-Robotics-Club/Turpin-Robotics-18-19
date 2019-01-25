@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.oldCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -8,7 +9,7 @@ import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldRobotConstants;
 import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldMove;
 
 @Autonomous(name="A C 0", group="Old Code")
-//@Disabled
+@Disabled
 public class driveForward extends LinearOpMode{
 
 

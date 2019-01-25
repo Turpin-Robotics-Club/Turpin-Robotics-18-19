@@ -43,7 +43,7 @@ public class ScrimmageAutonomous2 extends LinearOpMode {
         backRight.setPower(0);
         slap.setPower(0.4);
         push.setPower(-0.7);
-        sleep(300);
+        sleep(500);
         push.setPower(0);
         sleep(300);
         slap.setPower(0);

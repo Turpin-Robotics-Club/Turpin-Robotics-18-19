@@ -71,7 +71,17 @@ public class ConceptObjectDetection extends LinearOpMode {
             }
 
             while (opModeIsActive()) {
-                if (tfod != null) {
+                if (tfod != null && tfod.getRecognitions() != null) {
+
+
+                    for(Recognition a : tfod.getRecognitions()){
+                        telemetry.addData("Object", a.getLabel());
+                        telemetry.addData("    Bottom", a.getBottom());
+                        telemetry.addData("    Left", a.getLeft());
+                    }
+                    sleep(1);
+                    telemetry.update();
+                    /*
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -103,7 +113,10 @@ public class ConceptObjectDetection extends LinearOpMode {
                         }
                         telemetry.update();
                     }
+                    */
+
                 }
+
             }
         }
 

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.oldCode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldSensors;
 
 @TeleOp(name = "VuMarlr test", group = "Tests")
+@Disabled
 public class vuTest extends OpMode {
 
 

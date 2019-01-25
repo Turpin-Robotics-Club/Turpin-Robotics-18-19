@@ -37,6 +37,7 @@ public class TFODBase {
         } else {
             opMode.telemetry.addData("Sorry!", "This device is not compatible with TFOD");
         }
+        tfod.activate();
     }
 
     public List<Recognition> getVisibleObjects(){

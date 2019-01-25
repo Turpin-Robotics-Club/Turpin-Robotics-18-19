@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 //defining that the program is to be listed under the teleop programs
-@TeleOp(name = "Showbot", group = "Showbot")
+//@TeleOp(name = "Showbot", group = "Showbot")
 public class showBot extends OpMode {
 
     //defines that the motors are motors

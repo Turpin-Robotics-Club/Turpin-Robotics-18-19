@@ -13,10 +13,10 @@ import java.util.ArrayList;
 
 public class move {
     //Drive Motors
-    private DcMotor flmotor;
-    private DcMotor frmotor;
-    private DcMotor blmotor;
-    private DcMotor brmotor;
+    public DcMotor flmotor;
+    public DcMotor frmotor;
+    public DcMotor blmotor;
+    public DcMotor brmotor;
 
 
     private OpMode opMode;
@@ -157,19 +157,15 @@ public class move {
 
         double target = Sensors.realGyro() + degrees;
         while (target>360)target-=360;
+        while (target<0)target+=360;
         //by default, right
         while(Sensors.realGyro()>target+10 || Sensors.realGyro()<target-10){
-            if(degrees>0){
+
                 flmotor.setPower(power);
                 frmotor.setPower(-power);
                 blmotor.setPower(power);
                 brmotor.setPower(-power);
-            }else if(degrees<0){
-                flmotor.setPower(-power);
-                frmotor.setPower(power);
-                blmotor.setPower(-power);
-                brmotor.setPower(power);
-            }
+
             opMode.telemetry.addData("Target", target);
             opMode.telemetry.addData("Current", Sensors.readGyro());
             opMode.telemetry.addData("Real", Sensors.realGyro());

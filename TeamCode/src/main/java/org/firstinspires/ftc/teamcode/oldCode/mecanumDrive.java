@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.oldCode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.oldCode.oldUtils.oldSensors;
 
 
 @TeleOp(name = "Old Mecanum Drive", group = "Old Code")
+@Disabled
 public class mecanumDrive extends OpMode {
 
 
