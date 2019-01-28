@@ -102,7 +102,7 @@ public class ScrimmageDrive extends OpMode {
             lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-        else lift.setPower((gamepad2.right_trigger>0.5 && lift.getCurrentPosition()>0.5? -0.5:(gamepad2.right_bumper && lift.getCurrentPosition()<2900? 0.5 : 0)));
+        else lift.setPower((gamepad2.right_trigger>0.5 && lift.getCurrentPosition()>0.5? -0.5:(gamepad2.right_bumper && lift.getCurrentPosition()<3100? 0.5 : 0)));
         telemetry.addData("Lift counts", lift.getCurrentPosition());
         //operator/driver combined controls
         /*
@@ -114,7 +114,7 @@ public class ScrimmageDrive extends OpMode {
 
 
 
-        push.setPower(Math.pow(gamepad2.left_stick_y,3)*0.5);
+        push.setPower(Math.pow(gamepad2.left_stick_y,3)*0.85);
 
         if(gamepad2.left_bumper){
             flip.setPosition(0.0);

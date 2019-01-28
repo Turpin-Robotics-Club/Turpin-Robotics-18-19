@@ -52,13 +52,13 @@ public class ForwardAutonomous extends LinearOpMode {
         drive.resetEncoders();
 
 
-        for(int i=0;i<120;i+=2) {
+        for(int i=0;i<100;i+=2) {
             if (tfod.getVisibleObjects().size() > 0) {
 
 
                 for (Recognition a : tfod.getVisibleObjects()) {
                     sleep(25);
-                    if (gold == null && a.getBottom() > 900 && a.getLabel().equals(TFODBase.LABEL_GOLD_MINERAL))
+                    if (gold == null && a.getBottom() > 1050 && a.getLabel().equals(TFODBase.LABEL_GOLD_MINERAL))
                         gold = a;
                     else if (gold != null && (gold.getBottom() < a.getBottom()) && a.getLabel().equals(TFODBase.LABEL_GOLD_MINERAL)) {
                         gold = a;
@@ -67,7 +67,7 @@ public class ForwardAutonomous extends LinearOpMode {
 
                 }
             }
-            sleep(25);
+            sleep(15);
             if(gold != null) telemetry.addData("Seeking", gold.getLeft());
             else telemetry.addData("Seeking", "None");
             telemetry.update();
@@ -110,7 +110,7 @@ public class ForwardAutonomous extends LinearOpMode {
 
         */
 
-        //drive.forward(20, 0.5f);
+        drive.forward(10, 0.5f);
         drive.resetEncoders();
 
         push.setPower(-1);
