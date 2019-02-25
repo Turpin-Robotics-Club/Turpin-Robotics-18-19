@@ -25,6 +25,7 @@ public class OneDrive extends OpMode {
     private double backRightPower;
     private boolean slowBot = false;
     private boolean LeftStickJustChanged = false;
+    private boolean stopFlip = true;
     private final double SPEED = 1.1;
     private final double forwardBonus = 0.9;
 
@@ -104,8 +105,17 @@ public class OneDrive extends OpMode {
 
     }
     private void DriveOperator(){
+        if(gamepad1.right_trigger>0.5){
+            lift.setPower(0.5);
+            stopFlip = false;
+        }else if(gamepad1.right_bumper){
+            lift.setPower(-0.5);
+            stopFlip = true;
+        }else if(stopFlip){lift.setPower(0); }
 
-        lift.setPower((gamepad1.right_trigger>0.5? -0.5:(gamepad1.right_bumper? 0.5 : 0)));
+        telemetry.addData("Stop Flip", stopFlip);
+        telemetry.addData("Lift Power", lift.getPower());
+
         telemetry.addData("Lift counts", lift.getCurrentPosition());
 
 
@@ -128,8 +138,8 @@ public class OneDrive extends OpMode {
         else slap.setPower(0);
 
 
-        if(gamepad1.dpad_right)openServo.setPosition(0.70);
-        else if(gamepad1.dpad_left) openServo.setPosition(0.35);
+        if(gamepad1.dpad_right)openServo.setPosition(1);
+        else if(gamepad1.dpad_left) openServo.setPosition(0.65);
     }
 
 }

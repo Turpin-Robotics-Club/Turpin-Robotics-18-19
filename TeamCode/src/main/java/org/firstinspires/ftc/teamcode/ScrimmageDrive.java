@@ -16,13 +16,18 @@ public class ScrimmageDrive extends OpMode {
     private DcMotor lift;
     private DcMotor push;
     private DcMotor slap;
-    private Servo flip;
+    private Servo flipServo;
+    private Servo openServo;
     private DcMotor liftBot;
     private double frontLeftPower;
     private double frontRightPower;
     private double backLeftPower;
     private double backRightPower;
 
+
+    private boolean slowBot = false;
+    private boolean LeftStickJustChanged = false;
+    private boolean stopFlip = true;
     private final double SPEED = 1.1;
     private final double forwardBonus = 0.9;
 
@@ -43,20 +48,23 @@ public class ScrimmageDrive extends OpMode {
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        openServo = hardwareMap.servo.get("open_servo");
+        //openServo.setPosition(0.70);
         liftBot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftBot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flip = hardwareMap.servo.get("flip_servo");
+        flipServo = hardwareMap.servo.get("flip_servo");
 
-        flip.setPosition(1);
+        //flipServo.setPosition(0.51);
     }
 
-    public void loop(){
+    @Override
+    public void loop() {
         frontLeftPower = 0;
         frontRightPower = 0;
         backLeftPower = 0;
         backRightPower = 0;
         driver();
-        operator();
+        Operator();
         frontLeft.setPower(Math.pow(frontLeftPower, 3) * SPEED);
         frontRight.setPower(Math.pow(frontRightPower, 3) * SPEED);
         backLeft.setPower(Math.pow(backLeftPower, 3) * SPEED);
@@ -66,7 +74,10 @@ public class ScrimmageDrive extends OpMode {
     private void driver() {
 
         // Movement
-        if (!gamepad1.right_bumper) {
+        if(!gamepad1.left_stick_button) LeftStickJustChanged = false;
+        else if(!LeftStickJustChanged){ slowBot = !slowBot; LeftStickJustChanged = true;}
+
+        if (slowBot) {
             frontLeftPower += (gamepad1.left_stick_x + (-gamepad1.left_stick_y * forwardBonus)) / 1.5;
             frontRightPower += (-gamepad1.left_stick_x + (-gamepad1.left_stick_y * forwardBonus)) / 1.5;
             backLeftPower += (-gamepad1.left_stick_x + (-gamepad1.left_stick_y * forwardBonus)) / 1.5;
@@ -87,46 +98,51 @@ public class ScrimmageDrive extends OpMode {
 
 
         //lift robot
-        if (gamepad1.y) liftBot.setPower(1f);
-        else if(gamepad1.a) liftBot.setPower(-1);
+        if (gamepad1.dpad_up) liftBot.setPower(1f);
+        else if(gamepad1.dpad_down) liftBot.setPower(-1);
         else liftBot.setPower(0);
         telemetry.addData("Lift Bot Enc", liftBot.getCurrentPosition());
 
 
 
     }
-    private void operator(){
+    private void Operator(){
+        if(gamepad2.dpad_down){
+            lift.setPower(0.1);
+            stopFlip = false;
+        }else if(gamepad2.dpad_up){
+            lift.setPower(-0.5);
 
-        if(gamepad2.right_trigger>0.5 && gamepad2.right_bumper) {
-            lift.setPower(-0.35);
-            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        else lift.setPower((gamepad2.right_trigger>0.5 && lift.getCurrentPosition()>0.5? -0.5:(gamepad2.right_bumper && lift.getCurrentPosition()<3100? 0.5 : 0)));
+            stopFlip = true;
+        }else if(stopFlip){lift.setPower(0); }
+
+        telemetry.addData("Stop Flip", stopFlip);
+        telemetry.addData("Lift Power", lift.getPower());
+
         telemetry.addData("Lift counts", lift.getCurrentPosition());
-        //operator/driver combined controls
-        /*
-        frontLeftPower += (gamepad2.left_stick_x);
-        frontRightPower += (-gamepad2.left_stick_x);
-        backLeftPower += (-gamepad2.left_stick_x);
-        backRightPower += (gamepad2.left_stick_x);
-        */
 
 
 
-        push.setPower(Math.pow(gamepad2.left_stick_y,3)*0.85);
 
-        if(gamepad2.left_bumper){
-            flip.setPosition(0.0);
+        push.setPower(gamepad2.left_stick_y * 0.75);
+
+
+        if(gamepad2.y){
+            flipServo.setPosition(0.02);
 
         }
-        else if(gamepad2.left_trigger>0.2){
-            flip.setPosition(1);
+        else if(gamepad2.x){
+            flipServo.setPosition(0.51);
         }
 
         if(gamepad2.a) slap.setPower(0.9);
         else if(gamepad2.b) slap.setPower(-0.4);
         else slap.setPower(0);
+
+
+        if(gamepad2.dpad_right)openServo.setPosition(1); //close
+        else if(gamepad2.dpad_left) openServo.setPosition(0.65); //open
     }
+
 
 }

@@ -2,18 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.teamcode.utils.Sensors;
 import org.firstinspires.ftc.teamcode.utils.TFODBase;
 import org.firstinspires.ftc.teamcode.utils.move;
 
 
-@Autonomous(name = "Forward Autonomous", group = "Autonomous Finals")
-public class ForwardAutonomous extends LinearOpMode {
+@Autonomous(name = "Claim Autonomous", group = "Autonomous Finals")
+public class ClaimAutonomous extends LinearOpMode {
 
     move drive;
     TFODBase tfod;
@@ -38,11 +35,11 @@ public class ForwardAutonomous extends LinearOpMode {
 
 
         drive.resetEncoders();
-        drive.flmotor.setPower(0.5);
-        drive.frmotor.setPower(-0.5);
+        drive.flmotor.setPower(0.35);
+        drive.frmotor.setPower(-0.35);
         drive.blmotor.setPower(-1);
         drive.brmotor.setPower(1);
-        while ((drive.flmotor.getCurrentPosition() - drive.frmotor.getCurrentPosition() - drive.brmotor.getCurrentPosition() + drive.brmotor.getCurrentPosition())/4f<700){ telemetry.addData("Pos", (drive.flmotor.getCurrentPosition() - drive.frmotor.getCurrentPosition() - drive.brmotor.getCurrentPosition() + drive.brmotor.getCurrentPosition())/4f); telemetry.update();}
+        while ((drive.flmotor.getCurrentPosition() - drive.frmotor.getCurrentPosition() - drive.brmotor.getCurrentPosition() + drive.brmotor.getCurrentPosition())/4f<150){ telemetry.addData("Pos", (drive.flmotor.getCurrentPosition() - drive.frmotor.getCurrentPosition() - drive.brmotor.getCurrentPosition() + drive.brmotor.getCurrentPosition())/4f); telemetry.update();}
         telemetry.addData("Hook", "Exited");
         telemetry.update();
         drive.flmotor.setPower(0);
@@ -51,6 +48,14 @@ public class ForwardAutonomous extends LinearOpMode {
         drive.brmotor.setPower(0);
         drive.resetEncoders();
 
+
+
+        drive.forward(30, 0.5f);
+        drive.resetEncoders();
+
+        push.setPower(-0.8);
+        sleep(800);
+        push.setPower(0);
 
 
     }

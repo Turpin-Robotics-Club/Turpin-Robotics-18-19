@@ -39,7 +39,7 @@ public class move {
         brmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flmotor.setDirection(DcMotorSimple.Direction.REVERSE);
         blmotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        Sensors.initialize(opMode);
+        //Sensors.initialize(opMode);
     }
 
     public void forward(float distance, float power){
